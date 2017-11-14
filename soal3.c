@@ -1,6 +1,7 @@
 #define FUSE_USE_VERSION 28
 #include <fuse.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -99,17 +100,21 @@ static int xmp_write(const char *path, const char *buf, size_t size, off_t offse
 {
     int fd;
     int res;
-    char fpath[100];
+    char fpath[100], sesuatu[100], touch[100];
+    const char *namafolder = "/simpanan";
 
-    sprintf(fpath, "%s%s", dirpath, path);
+    sprintf(sesuatu, "%s%s", dirpath, namafolder);
+    mkdir(sesuatu, 0644);
+    sprintf(touch, "touch %s%s", sesuatu, path);
+    system(touch);
+
+    sprintf(fpath, "%s%s", sesuatu, path);
     
     fd = open(fpath, O_WRONLY);
     if(fd == -1)
     {
         return -errno;
     }
-
-    xmp_mkdir("hehe", 777);
 
     res = pwrite(fd, buf, size, offset);
     if(res == -1)
