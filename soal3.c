@@ -23,8 +23,7 @@ static int xmp_getattr(const char *path, struct stat *stbuf)
     return 0;
 }
 
-static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
-               off_t offset, struct fuse_file_info *fi)
+static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi)
 {
   char fpath[1000];
     if(strcmp(path,"/") == 0)
@@ -58,8 +57,7 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
     return 0;
 }
 
-static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
-            struct fuse_file_info *fi)
+static int xmp_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi)
 {
   char fpath[1000];
     if(strcmp(path,"/") == 0)
@@ -97,16 +95,21 @@ static int xmp_mkdir(const char *path, mode_t mode)
     return 0;
 }
 
-static int xmp_write(const char *path, const char *buf, size_t size,off_t offset)
+static int xmp_write(const char *path, const char *buf, size_t size, off_t offset, struct fuse_file_info *fi)
 {
     int fd;
-    int res
+    int res;
+    char fpath[100];
+
+    sprintf(fpath, "%s%s", dirpath, path);
     
-    fd = open(path, O_WRONLY);
+    fd = open(fpath, O_WRONLY);
     if(fd == -1)
     {
         return -errno;
     }
+
+    xmp_mkdir("hehe", 777);
 
     res = pwrite(fd, buf, size, offset);
     if(res == -1)
@@ -120,8 +123,8 @@ static struct fuse_operations xmp_oper = {
     .getattr    = xmp_getattr,
     .readdir    = xmp_readdir,
     .read       = xmp_read,
-    .mkdir      = xmp_mkdir,
     .write      = xmp_write,
+    .mkdir      = xmp_mkdir,
 };
 
 int main(int argc, char *argv[])
