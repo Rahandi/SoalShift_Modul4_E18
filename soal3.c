@@ -119,12 +119,29 @@ static int xmp_write(const char *path, const char *buf, size_t size, off_t offse
     return res;
 }
 
+static int xmp_truncate(const char *path, off_t size)
+{
+    int res;
+    char fpath[100];
+
+    sprintf(fpath, "%s%s", dirpath, path);
+
+    res = truncate(fpath, size);
+    if(res == -1)
+    {
+        return -errno;
+    }
+
+    return 0;
+}
+
 static struct fuse_operations xmp_oper = {
     .getattr    = xmp_getattr,
     .readdir    = xmp_readdir,
     .read       = xmp_read,
     .write      = xmp_write,
     .mkdir      = xmp_mkdir,
+    .truncate   = xmp_truncate
 };
 
 int main(int argc, char *argv[])
