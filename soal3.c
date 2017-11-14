@@ -87,7 +87,9 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset,
 static int xmp_mkdir(const char *path, mode_t mode)
 {
     int result;
-    result = mkdir(path, mode);
+    char fpath[100];
+    sprintf(fpath, "%s%s", dirpath, path);
+    result = mkdir(fpath, mode);
     if(result == -1)
     {
         return -errno;
