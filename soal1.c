@@ -82,7 +82,7 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset, stru
 	return res;
 }
 
-int flag (const char *filename)
+int flags (const char *filename)
 {
 	int x = strlen (filename);
 	char file[100];
@@ -93,20 +93,20 @@ int flag (const char *filename)
 	else return 0;
 }
 
-static int xmp_open (const char *path, struct fuse_file_into *fi)
+static int xmp_open (const char *path, struct fuse_file_info *fi)
 {
 	int res;
 	char fpath[1000];
 
 	sprintf (fpath,"%s%s", dirpath, path);
-	if(flag(fpath))
+	if(flags(fpath))
 	{
 		system("notify-send error");
 		return 1;
 	}
 	else
 	{
-		res = open(fpath, fi->flag);
+		res = open(fpath, fi->flags);
 		if (res==-1) return -errno;
 	}
 	close(res);
