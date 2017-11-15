@@ -118,6 +118,7 @@ static struct fuse_operations xmp_oper =
 	.getattr	= xmp_getattr,
 	.readdir	= xmp_readdir,
 	.read		= xmp_read,
+	.open		= xmp_open,
 };
 
 int main(int argc, char *argv[])
