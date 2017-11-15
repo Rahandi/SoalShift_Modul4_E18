@@ -7,6 +7,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <sys/time.h>
+#include <stdlib.h>
 
 static const char *dirpath = "/home/ghifarozarrr/Documents";
 
@@ -80,6 +81,19 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset, stru
 	close(fd);
 	return res;
 }
+
+int flag (const char *filename)
+{
+	int x = strlen (filename);
+	char file[100];
+	
+	strcpy (file, filename+x-4);
+
+	if (strcmp(file,".jpg")==0) return 1;
+	else return 0;
+}
+
+static int xmp_open (const char *
 
 static struct fuse_operations xmp_oper = 
 {
