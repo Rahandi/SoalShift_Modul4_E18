@@ -70,45 +70,37 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset, stru
 	int fd = 0 ;
 
 	(void) fi;
+	int i;
+	char ext[1000], cmd[1000];
+	for(i=0; i<strlen(fpath) && fpath[i]!='.'; i++)
+	{
+		strcpy(ext, fpath+i)	
+	}
 	fd = open(fpath, O_RDONLY);
-	if (fd == -1)
-		return -errno;
+	if (fd == -1) return -errno;
+	else
+	{
+		if(strcmp(ext, ".pdf") == 0 || strcmp(ext, ".doc") == 0 || strcmp(ext, ".txt") == 0|| strcmp(ext, ".ditandai") == 0)
+		{
+			char from[1000], to[1000], newfolder[1000], filename[1000];			
+			system("zenity --width 400 --error --title 'Error' --text 'Terjadi Kesalahan! File berisi konten berbahaya.'");
+			strcpy(newfolder, fpath); //hm
+                }
+	}
 
 	res = pread(fd, buf, size, offset);
-	if (res == -1)
-		res = -errno;
+	if (res == -1) res = -errno;
 
 	close(fd);
 	return res;
 }
 
-int flags (const char *filename)
-{
-	int x = strlen (filename);
-	char file[100];
-	
-	strcpy (file, filename+x-4);
-
-	if (strcmp(file,".jpg")==0) return 1;
-	else return 0;
-}
 
 static int xmp_open (const char *path, struct fuse_file_info *fi)
 {
 	int res;
 	char fpath[1000];
 
-	sprintf (fpath,"%s%s", dirpath, path);
-	if(flags(fpath))
-	{
-		system("notify-send error");
-		return 1;
-	}
-	else
-	{
-		res = open(fpath, fi->flags);
-		if (res==-1) return -errno;
-	}
 	close(res);
 	return 0;
 }
