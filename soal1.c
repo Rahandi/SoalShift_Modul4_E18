@@ -50,7 +50,7 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_
 		st.st_ino = de->d_ino;
 		st.st_mode = de->d_type << 12;
 		res = (filler(buf, de->d_name, &st, 0));
-			if(res!=0) break;
+		if(res!=0) break;
 	}
 
 	closedir(dp);
@@ -60,23 +60,27 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_
 static int xmp_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi)
 {
   	char fpath[1000];
-	int res;
-	int fd;
+	int res = 0, fd = 0, i;
 	sprintf(fpath, "%s%s",dirpath,path);
 	
 	(void) fi;
-	int i;
+
 	char ext[1000];
 	for(i=0; i<strlen(fpath) && fpath[i]!='.'; i++);
 	strcpy(ext, fpath+i);
 	fd = open(fpath, O_RDONLY);
+	char pindah[1000], asal[1000], tujuan[1000]; 
 	if (fd == -1) return -errno;
 	else
 	{
 		if(strcmp(ext, ".pdf") == 0 || strcmp(ext, ".doc") == 0 || strcmp(ext, ".txt") == 0|| strcmp(ext, ".ditandai") == 0)
 		{	
 			system("zenity --width 400 --error --title 'Error' --text 'Terjadi Kesalahan! File berisi konten berbahaya.'");
-
+			sprintf(asal, "%s", fpath);
+                        sprintf(tujuan, "%s.ditandai", fpath);
+			sprintf(pindah, "mv %s %s", asal, tujuan); //biar gampang ntar no 2nya
+			system(pindah);
+			return -errno;
                 }
 		res = pread(fd, buf, size, offset);
 		if (res == -1) res = -errno;
