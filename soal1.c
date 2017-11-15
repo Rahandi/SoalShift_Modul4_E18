@@ -93,7 +93,25 @@ int flag (const char *filename)
 	else return 0;
 }
 
-static int xmp_open (const char *
+static int xmp_open (const char *path, struct fuse_file_into *fi)
+{
+	int res;
+	char fpath[1000];
+
+	sprintf (fpath,"%s%s", dirpath, path);
+	if(flag(fpath))
+	{
+		system("notify-send error");
+		return 1;
+	}
+	else
+	{
+		res = open(fpath, fi->flag);
+		if (res==-1) return -errno;
+	}
+	close(res);
+	return 0;
+}
 
 static struct fuse_operations xmp_oper = 
 {
