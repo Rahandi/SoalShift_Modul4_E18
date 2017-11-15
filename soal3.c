@@ -10,6 +10,9 @@
 #include <sys/time.h>
 
 static const char *dirpath = "/home/randi/Downloads";
+char awal[1000];
+size_t awalsize;
+off_t offsetawal;
 
 static int xmp_getattr(const char *path, struct stat *stbuf)
 {
@@ -79,6 +82,9 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset, stru
     if (res == -1)
         res = -errno;
 
+    sprintf(awal, "%s", buf);
+    awalsize = size;
+    offsetawal = offset;
     close(fd);
     return res;
 }
@@ -100,14 +106,17 @@ static int xmp_write(const char *path, const char *buf, size_t size, off_t offse
 {
     int fd;
     int res;
-    char fpath[100], sesuatu[100], touch[100];
+    char fawal[100], fpath[100], sesuatu[100], touch[100];
     const char *namafolder = "/simpanan";
 
     sprintf(sesuatu, "%s%s", dirpath, namafolder);
     mkdir(sesuatu, 0644);
     sprintf(touch, "touch %s%s", sesuatu, path);
     system(touch);
-
+    sprintf(fawal, "%s%s", dirpath, path);
+    fd = open(fawal, O_WRONLY);
+    pwrite(fd, awal, awalsize, offsetawal);
+    close(fd);
     sprintf(fpath, "%s%s", sesuatu, path);
     
     fd = open(fpath, O_WRONLY);
