@@ -140,13 +140,29 @@ static int xmp_truncate(const char *path, off_t size)
     return 0;
 }
 
+static int xmp_open(const char *path, struct fuse_file_info *fi)
+{
+    int res;
+    char fpath[100];
+
+    sprintf(fpath, "%s%s", dirpath, path);
+
+    res = open(path, fi->flags);
+    if (res == -1)
+        return -errno;
+
+    close(res);
+    return 0;
+}
+
 static struct fuse_operations xmp_oper = {
     .getattr    = xmp_getattr,
     .readdir    = xmp_readdir,
     .read       = xmp_read,
     .write      = xmp_write,
     .mkdir      = xmp_mkdir,
-    .truncate   = xmp_truncate
+    .truncate   = xmp_truncate,
+    .open       = xmp_open
 };
 
 int main(int argc, char *argv[])
