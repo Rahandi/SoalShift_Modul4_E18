@@ -22,6 +22,26 @@ static int E18_getattr(const char *path, struct stat *stbuf){
     return 0;
 }
 
+static int E18_getdir(const char *path, fuse_dirh_t h, fuse_dirfil_t filler){
+    DIR *dp;
+    struct dirent *de;
+    int result = 0;
+    char fullpath[100];
+    sprintf(fullpath, "%s%s", dirpath, path);
+    dp = opendir(fullpath);
+    if(dp == NULL){
+        return -errno;
+    }
+    while((de=readdir(dp)) != NULL){
+        result = filler(h, de->d_name, de->d_type);
+        if(result != 0){
+            break;
+        }
+    }
+    closedir(dp);
+    return res;
+}
+
 static struct fuse_operations E18_oper = {
     .getattr    =   E18_getattr,
     .getdir     =   E18_getdir,
