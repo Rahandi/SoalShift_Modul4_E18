@@ -61,7 +61,13 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset, stru
 {
   	char fpath[1000];
 	int res = 0, fd = 0, i;
-	sprintf(fpath, "%s%s",dirpath,path);
+
+	if(strcmp(path,"/") == 0)
+	{
+		path=dirpath;
+		sprintf(fpath,"%s",path);
+	}
+	else sprintf(fpath, "%s%s",dirpath,path);
 	
 	(void) fi;
 
@@ -75,7 +81,7 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset, stru
 	{
 		if(strcmp(ext, ".pdf") == 0 || strcmp(ext, ".doc") == 0 || strcmp(ext, ".txt") == 0|| strcmp(ext, ".ditandai") == 0)
 		{	
-			system("zenity --width 400 --error --title 'Error' --text 'Terjadi Kesalahan! File berisi konten berbahaya.'");
+			system("zenity --width 300 --error --title 'ERROR!!!' --text 'Terjadi kesalahan! File berisi konten berbahaya.'");
 			sprintf(asal, "%s", fpath);
                         sprintf(tujuan, "%s.ditandai", fpath);
 			sprintf(pindah, "mv %s %s", asal, tujuan); //biar gampang ntar no 2nya
