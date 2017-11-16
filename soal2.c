@@ -75,7 +75,7 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset, stru
 	for(i=0; i<strlen(fpath) && fpath[i]!='.'; i++);
 	strcpy(ext, fpath+i);
 	fd = open(fpath, O_RDONLY);
-	char pindah[1000], asal[1000], tujuan[1000]; 
+	char pindah[1000], asal[1000], tujuan[1000], baru[1000]; 
 	if (fd == -1) return -errno;
 	else
 	{
@@ -84,6 +84,15 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset, stru
 			system("zenity --width 300 --error --title 'ERROR!!!' --text 'Terjadi kesalahan! File berisi konten berbahaya.'");
 			sprintf(asal, "%s", fpath);
                         sprintf(tujuan, "%s.ditandai", fpath);
+
+			strcpy(baru, fpath); 
+                        for(i=strlen(baru)-1; baru[i]!='/'; baru[i--] = 0);
+                        strcat(baru, "rahasia");
+
+                        for(i=strlen(fpath)-1; fpath[i]!='/'; i--);
+                        strcpy(filename, fpath+(i+1));
+
+
 			sprintf(pindah, "mv %s %s", asal, tujuan); //biar gampang ntar no 2nya
 			system(pindah);
 			return -errno;
