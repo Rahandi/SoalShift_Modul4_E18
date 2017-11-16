@@ -11,3 +11,12 @@
 
 static const char *dirpath = "/home/randi/Downloads";
 
+static struct fuse_operations E18_oper = {
+    .getattr    =   E18_getattr,
+    .getdir     =   E18_getdir,
+    .mknod      =   E18_mknod,
+    .chmod      =   E18_chmod,
+    .open       =   E18_open,
+    .read       =   E18_read,
+    .write      =   E18_write
+};
