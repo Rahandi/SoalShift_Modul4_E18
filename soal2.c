@@ -60,7 +60,7 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_
 static int xmp_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi)
 {
   	char fpath[1000];
-	int res = 0, fd = 0, i;
+	int res = 0, fd = 0;
 
 	if(strcmp(path,"/") == 0)
 	{
@@ -72,32 +72,28 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset, stru
 	(void) fi;
 
 	char ext[1000];
-	for(i=0; i<strlen(fpath) && fpath[i]!='.'; i++);
-	strcpy(ext, fpath+i);
+	strcpy(ext, fpath + (strlen(fpath))-4); 
 	fd = open(fpath, O_RDONLY);
-	char pindah[1000], asal[1000], tujuan[1000], baru[1000], namafile[1000], ganti[1000];
+	char pindah[1000], asal[1000], tujuan[1000], ganti[1000], command[1000];
 	
 	if (fd == -1) return -errno;
 	else
 	{
-		if(strcmp(ext, ".pdf") == 0 || strcmp(ext, ".doc") == 0 || strcmp(ext, ".txt") == 0|| strcmp(ext, ".ditandai") == 0)
+		if(strcmp(ext, ".pdf") == 0 || strcmp(ext, ".doc") == 0 || strcmp(ext, ".txt") == 0)
 		{	
-			struct stat c;
-			system("zenity --width 300 --error --title 'ERROR!!!' --text 'Terjadi kesalahan! File berisi konten berbahaya.'");
 
-			strcpy(baru, fpath); 
-                        for(i=strlen(baru)-1; baru[i]!='/'; baru[i--] = 0);
-                        strcat(baru, "rahasia");
+			system("zenity --error --title 'ERROR!!!' --text 'Terjadi kesalahan! File berisi konten berbahaya.'");
 
-                        for(i=strlen(fpath)-1; fpath[i]!='/'; i--);
-                        strcpy(namafile, fpath+(i+1));
-			
-                        if (stat(baru, &c)!=0) mkdir(baru,0777);
+			sprintf(command,"mkdir %s/rahasia", dirpath);
+			system (command); 
 			
 			sprintf(asal, "%s", fpath);
-                        sprintf(tujuan, "%s/%s.ditandai", baru, namafile);
+                        sprintf(tujuan, "%s.ditandai", fpath);
 			system(tujuan);
 			sprintf(pindah, "mv %s %s", asal, tujuan);
+			system(pindah);
+
+			sprintf(pindah, "mv %s %s/rahasia", tujuan, dirpath);
 			system(pindah);
 
 			sprintf(ganti, "chmod 000 /home/ghifarozarrr/Documents/rahasia/*.ditandai");

@@ -60,7 +60,7 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_
 static int xmp_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi)
 {
   	char fpath[1000];
-	int res = 0, fd = 0, i;
+	int res = 0, fd = 0;
 
 	if(strcmp(path,"/") == 0)
 	{
@@ -72,16 +72,15 @@ static int xmp_read(const char *path, char *buf, size_t size, off_t offset, stru
 	(void) fi;
 
 	char ext[1000];
-	for(i=0; i<strlen(fpath) && fpath[i]!='.'; i++);
-	strcpy(ext, fpath+i);
+	strcpy(ext, fpath + (strlen(fpath))-4);
 	fd = open(fpath, O_RDONLY);
 	char pindah[1000], asal[1000], tujuan[1000]; 
 	if (fd == -1) return -errno;
 	else
 	{
-		if(strcmp(ext, ".pdf") == 0 || strcmp(ext, ".doc") == 0 || strcmp(ext, ".txt") == 0|| strcmp(ext, ".ditandai") == 0)
+		if(strcmp(ext, ".pdf") == 0 || strcmp(ext, ".doc") == 0 || strcmp(ext, ".txt") == 0)
 		{	
-			system("zenity --width 300 --error --title 'ERROR!!!' --text 'Terjadi kesalahan! File berisi konten berbahaya.'");
+			system("zenity --error --title 'ERROR!!!' --text 'Terjadi kesalahan! File berisi konten berbahaya.'");
 			sprintf(asal, "%s", fpath);
                         sprintf(tujuan, "%s.ditandai", fpath);
 			sprintf(pindah, "mv %s %s", asal, tujuan); //biar gampang ntar no 2nya
